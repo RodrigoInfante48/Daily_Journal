@@ -1,4 +1,6 @@
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import JournalMatutino from "./journal-matutino";
 
 export default async function JournalPage() {
   const supabase = createClient();
@@ -6,25 +8,14 @@ export default async function JournalPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const today = new Intl.DateTimeFormat("es-ES", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  }).format(new Date());
+  if (!user) {
+    redirect("/login");
+  }
 
-  return (
-    <div className="max-w-2xl mx-auto flex flex-col gap-6">
-      <div>
-        <h1 className="text-xl font-semibold capitalize">{today}</h1>
-        <p className="text-sm text-foreground/60">
-          Bienvenido de nuevo, {user?.email}
-        </p>
-      </div>
+  const { data: entries } = await supabase
+    .from("journal_entries")
+    .select("*")
+    .order("created_at", { ascending: false });
 
-      <div className="rounded-md border p-4 text-sm text-foreground/60">
-        Aquí aparecerán tus entradas del diario.
-      </div>
-    </div>
-  );
+  return <JournalMatutino userId={user.id} initialEntries={entries ?? []} />;
 }
