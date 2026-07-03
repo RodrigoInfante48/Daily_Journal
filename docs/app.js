@@ -7,6 +7,7 @@ import {
   onAuthStateChanged,
   collection,
   addDoc,
+  updateDoc,
   deleteDoc,
   doc,
   getDocs,
@@ -34,6 +35,7 @@ import {
     libre: document.getElementById("libre"),
     clearBtn: document.getElementById("clearBtn"),
     saveBtn: document.getElementById("saveBtn"),
+    cancelEditBtn: document.getElementById("cancelEditBtn"),
     historyToggle: document.getElementById("historyToggle"),
     historyArrow: document.getElementById("historyArrow"),
     historyLabel: document.getElementById("historyLabel"),
@@ -53,6 +55,7 @@ import {
   var toastTimeoutId = null;
   var historyOpen = false;
   var currentUser = null;
+  var editingId = null;
 
   function formatTime(seconds) {
     var m = Math.floor(seconds / 60);
@@ -109,6 +112,18 @@ import {
       return;
     }
     await addDoc(entriesRef(), entry);
+  }
+
+  async function updateEntry(id, changes) {
+    if (!currentUser) {
+      saveLocalEntries(
+        loadLocalEntries().map(function (entry) {
+          return entry.id === id ? Object.assign({}, entry, changes) : entry;
+        })
+      );
+      return;
+    }
+    await updateDoc(doc(db, "users", currentUser.uid, "entries", id), changes);
   }
 
   async function removeEntry(id) {
@@ -211,9 +226,7 @@ import {
       return;
     }
 
-    var entry = {
-      id: makeId(),
-      created_at: new Date().toISOString(),
+    var fields = {
       gratitud_1: g1 || null,
       gratitud_2: el.g2.value.trim() || null,
       gratitud_3: el.g3.value.trim() || null,
@@ -223,15 +236,48 @@ import {
     };
 
     try {
-      await addEntry(entry);
+      if (editingId) {
+        await updateEntry(editingId, fields);
+      } else {
+        await addEntry(
+          Object.assign({ id: makeId(), created_at: new Date().toISOString() }, fields)
+        );
+      }
     } catch (e) {
-      showToast("No se pudo guardar la entrada");
+      showToast(editingId ? "No se pudo actualizar la entrada" : "No se pudo guardar la entrada");
       return;
     }
 
+    var wasEditing = Boolean(editingId);
+    stopEditing();
+
     if (historyOpen) renderHistory();
 
-    showToast("Entrada guardada ✓");
+    showToast(wasEditing ? "Entrada actualizada ✓" : "Entrada guardada ✓");
+    clearForm();
+  }
+
+  function startEditing(entry) {
+    editingId = entry.id;
+    el.g1.value = entry.gratitud_1 || "";
+    el.g2.value = entry.gratitud_2 || "";
+    el.g3.value = entry.gratitud_3 || "";
+    el.intencion.value = entry.intencion || "";
+    el.estado.value = entry.estado || "";
+    el.libre.value = entry.libre || "";
+    el.saveBtn.textContent = "Actualizar entrada";
+    el.cancelEditBtn.hidden = false;
+    el.g1.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  function stopEditing() {
+    editingId = null;
+    el.saveBtn.textContent = "Guardar entrada";
+    el.cancelEditBtn.hidden = true;
+  }
+
+  function cancelEditing() {
+    stopEditing();
     clearForm();
   }
 
@@ -244,6 +290,7 @@ import {
       showToast("No se pudo borrar la entrada");
       return;
     }
+    if (editingId === id) cancelEditing();
     renderHistory();
   }
 
@@ -268,6 +315,18 @@ import {
       date.textContent = formatDate(new Date(entry.created_at));
       card.appendChild(date);
 
+      var actions = document.createElement("div");
+      actions.className = "entryActions";
+
+      var edit = document.createElement("button");
+      edit.className = "entryEdit";
+      edit.type = "button";
+      edit.textContent = "Editar";
+      edit.addEventListener("click", function () {
+        startEditing(entry);
+      });
+      actions.appendChild(edit);
+
       var del = document.createElement("button");
       del.className = "entryDelete";
       del.type = "button";
@@ -275,7 +334,9 @@ import {
       del.addEventListener("click", function () {
         deleteEntry(entry.id);
       });
-      card.appendChild(del);
+      actions.appendChild(del);
+
+      card.appendChild(actions);
 
       var gratitud = [entry.gratitud_1, entry.gratitud_2, entry.gratitud_3]
         .filter(Boolean)
@@ -365,6 +426,7 @@ import {
     el.toggleBtn.addEventListener("click", toggleTimer);
     el.clearBtn.addEventListener("click", clearForm);
     el.saveBtn.addEventListener("click", saveEntry);
+    el.cancelEditBtn.addEventListener("click", cancelEditing);
     el.historyToggle.addEventListener("click", toggleHistory);
     el.loginBtn.addEventListener("click", login);
     el.logoutBtn.addEventListener("click", logout);
@@ -372,6 +434,7 @@ import {
     onAuthStateChanged(auth, function (user) {
       currentUser = user;
       renderAuthUI();
+      cancelEditing();
       if (historyOpen) renderHistory();
     });
   }

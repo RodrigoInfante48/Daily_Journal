@@ -22,9 +22,10 @@ npx serve docs
 
 ## Datos
 
-Las entradas se guardan en el `localStorage` del navegador, así que
-quedan solo en tu dispositivo — no hay cuenta, ni servidor, ni base de
-datos. Borrar los datos del sitio en el navegador elimina el historial.
+Si inicias sesión con Google, las entradas se guardan en Firestore bajo
+tu `uid` (`users/{uid}/entries`), con soporte completo de CRUD: crear,
+ver, editar y borrar. Sin sesión iniciada, las entradas se guardan en el
+`localStorage` del navegador y quedan solo en tu dispositivo.
 
 ## GitHub Pages
 

@@ -371,10 +371,15 @@ body {
   font-size: 0.88rem;
   white-space: pre-wrap;
 }
-.entryDelete {
+.entryActions {
   position: absolute;
   top: 0.9rem;
   right: 1rem;
+  display: flex;
+  gap: 0.9rem;
+}
+.entryEdit,
+.entryDelete {
   background: none;
   border: none;
   color: var(--faint);
@@ -383,7 +388,9 @@ body {
   text-transform: uppercase;
   cursor: pointer;
   font-family: "Inter", sans-serif;
+  padding: 0;
 }
+.entryEdit:hover,
 .entryDelete:hover {
   color: var(--ink);
 }
