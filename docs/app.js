@@ -1,3 +1,19 @@
+import {
+  auth,
+  db,
+  googleProvider,
+  signInWithPopup,
+  signOut,
+  onAuthStateChanged,
+  collection,
+  addDoc,
+  deleteDoc,
+  doc,
+  getDocs,
+  query,
+  orderBy,
+} from "./firebase.js";
+
 (function () {
   "use strict";
 
@@ -23,6 +39,11 @@
     historyLabel: document.getElementById("historyLabel"),
     historyList: document.getElementById("historyList"),
     toast: document.getElementById("toast"),
+    loginBtn: document.getElementById("loginBtn"),
+    logoutBtn: document.getElementById("logoutBtn"),
+    userBox: document.getElementById("userBox"),
+    userAvatar: document.getElementById("userAvatar"),
+    userName: document.getElementById("userName"),
   };
 
   var remaining = TOTAL_SECONDS;
@@ -31,6 +52,7 @@
   var intervalId = null;
   var toastTimeoutId = null;
   var historyOpen = false;
+  var currentUser = null;
 
   function formatTime(seconds) {
     var m = Math.floor(seconds / 60);
@@ -54,7 +76,7 @@
     return "id-" + Date.now() + "-" + Math.random().toString(16).slice(2);
   }
 
-  function loadEntries() {
+  function loadLocalEntries() {
     try {
       var raw = localStorage.getItem(STORAGE_KEY);
       return raw ? JSON.parse(raw) : [];
@@ -63,8 +85,42 @@
     }
   }
 
-  function saveEntries(entries) {
+  function saveLocalEntries(entries) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+  }
+
+  function entriesRef() {
+    return collection(db, "users", currentUser.uid, "entries");
+  }
+
+  async function loadEntries() {
+    if (!currentUser) return loadLocalEntries();
+    var snapshot = await getDocs(query(entriesRef(), orderBy("created_at", "desc")));
+    return snapshot.docs.map(function (d) {
+      return Object.assign({ id: d.id }, d.data());
+    });
+  }
+
+  async function addEntry(entry) {
+    if (!currentUser) {
+      var entries = loadLocalEntries();
+      entries.unshift(entry);
+      saveLocalEntries(entries);
+      return;
+    }
+    await addDoc(entriesRef(), entry);
+  }
+
+  async function removeEntry(id) {
+    if (!currentUser) {
+      saveLocalEntries(
+        loadLocalEntries().filter(function (entry) {
+          return entry.id !== id;
+        })
+      );
+      return;
+    }
+    await deleteDoc(doc(db, "users", currentUser.uid, "entries", id));
   }
 
   function showToast(message) {
@@ -145,7 +201,7 @@
     el.libre.value = "";
   }
 
-  function saveEntry() {
+  async function saveEntry() {
     var g1 = el.g1.value.trim();
     var intencion = el.intencion.value.trim();
     var libre = el.libre.value.trim();
@@ -166,9 +222,12 @@
       libre: libre || null,
     };
 
-    var entries = loadEntries();
-    entries.unshift(entry);
-    saveEntries(entries);
+    try {
+      await addEntry(entry);
+    } catch (e) {
+      showToast("No se pudo guardar la entrada");
+      return;
+    }
 
     if (historyOpen) renderHistory();
 
@@ -178,16 +237,18 @@
 
   // --- History ---
 
-  function deleteEntry(id) {
-    var entries = loadEntries().filter(function (entry) {
-      return entry.id !== id;
-    });
-    saveEntries(entries);
+  async function deleteEntry(id) {
+    try {
+      await removeEntry(id);
+    } catch (e) {
+      showToast("No se pudo borrar la entrada");
+      return;
+    }
     renderHistory();
   }
 
-  function renderHistory() {
-    var entries = loadEntries();
+  async function renderHistory() {
+    var entries = await loadEntries();
     el.historyList.innerHTML = "";
 
     if (entries.length === 0) {
@@ -263,6 +324,36 @@
     if (historyOpen) renderHistory();
   }
 
+  // --- Auth ---
+
+  function renderAuthUI() {
+    if (currentUser) {
+      el.loginBtn.hidden = true;
+      el.userBox.hidden = false;
+      el.userAvatar.src = currentUser.photoURL || "";
+      el.userName.textContent = currentUser.displayName || currentUser.email || "";
+    } else {
+      el.loginBtn.hidden = false;
+      el.userBox.hidden = true;
+    }
+  }
+
+  async function login() {
+    try {
+      await signInWithPopup(auth, googleProvider);
+    } catch (e) {
+      showToast("No se pudo iniciar sesión");
+    }
+  }
+
+  async function logout() {
+    try {
+      await signOut(auth);
+    } catch (e) {
+      showToast("No se pudo cerrar sesión");
+    }
+  }
+
   // --- Init ---
 
   function init() {
@@ -275,6 +366,14 @@
     el.clearBtn.addEventListener("click", clearForm);
     el.saveBtn.addEventListener("click", saveEntry);
     el.historyToggle.addEventListener("click", toggleHistory);
+    el.loginBtn.addEventListener("click", login);
+    el.logoutBtn.addEventListener("click", logout);
+
+    onAuthStateChanged(auth, function (user) {
+      currentUser = user;
+      renderAuthUI();
+      if (historyOpen) renderHistory();
+    });
   }
 
   document.addEventListener("DOMContentLoaded", init);
