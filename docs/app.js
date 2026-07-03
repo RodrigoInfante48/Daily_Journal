@@ -1,0 +1,281 @@
+(function () {
+  "use strict";
+
+  var STORAGE_KEY = "daily-journal-entries";
+  var TOTAL_SECONDS = 300;
+
+  var el = {
+    todayLabel: document.getElementById("todayLabel"),
+    timerDisplay: document.getElementById("timerDisplay"),
+    progressDots: document.getElementById("progressDots"),
+    resetBtn: document.getElementById("resetBtn"),
+    toggleBtn: document.getElementById("toggleBtn"),
+    g1: document.getElementById("g1"),
+    g2: document.getElementById("g2"),
+    g3: document.getElementById("g3"),
+    intencion: document.getElementById("intencion"),
+    estado: document.getElementById("estado"),
+    libre: document.getElementById("libre"),
+    clearBtn: document.getElementById("clearBtn"),
+    saveBtn: document.getElementById("saveBtn"),
+    historyToggle: document.getElementById("historyToggle"),
+    historyArrow: document.getElementById("historyArrow"),
+    historyLabel: document.getElementById("historyLabel"),
+    historyList: document.getElementById("historyList"),
+    toast: document.getElementById("toast"),
+  };
+
+  var remaining = TOTAL_SECONDS;
+  var running = false;
+  var finished = false;
+  var intervalId = null;
+  var toastTimeoutId = null;
+  var historyOpen = false;
+
+  function formatTime(seconds) {
+    var m = Math.floor(seconds / 60);
+    var s = seconds % 60;
+    return m + ":" + String(s).padStart(2, "0");
+  }
+
+  function formatDate(date) {
+    return new Intl.DateTimeFormat("es-CO", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }).format(date);
+  }
+
+  function makeId() {
+    if (window.crypto && window.crypto.randomUUID) {
+      return window.crypto.randomUUID();
+    }
+    return "id-" + Date.now() + "-" + Math.random().toString(16).slice(2);
+  }
+
+  function loadEntries() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveEntries(entries) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+  }
+
+  function showToast(message) {
+    if (toastTimeoutId) clearTimeout(toastTimeoutId);
+    el.toast.textContent = message;
+    el.toast.classList.add("toastShow");
+    toastTimeoutId = setTimeout(function () {
+      el.toast.classList.remove("toastShow");
+    }, 2200);
+  }
+
+  // --- Timer ---
+
+  function renderTimer() {
+    el.timerDisplay.textContent = formatTime(remaining);
+    var minutesLeft = Math.ceil(remaining / 60);
+    Array.prototype.forEach.call(el.progressDots.children, function (dot, i) {
+      dot.classList.toggle("dotActive", i < minutesLeft);
+    });
+    el.toggleBtn.disabled = remaining === 0;
+    el.toggleBtn.textContent = finished
+      ? "Listo"
+      : running
+      ? "Pausar"
+      : remaining === TOTAL_SECONDS
+      ? "Iniciar"
+      : "Continuar";
+  }
+
+  function buildDots() {
+    el.progressDots.innerHTML = "";
+    for (var i = 0; i < 5; i++) {
+      var dot = document.createElement("div");
+      dot.className = "dot";
+      el.progressDots.appendChild(dot);
+    }
+  }
+
+  function toggleTimer() {
+    if (running) {
+      if (intervalId) clearInterval(intervalId);
+      running = false;
+      renderTimer();
+      return;
+    }
+    if (remaining === 0) return;
+    running = true;
+    intervalId = setInterval(function () {
+      remaining -= 1;
+      if (remaining <= 0) {
+        remaining = 0;
+        clearInterval(intervalId);
+        running = false;
+        finished = true;
+        showToast("⏱ Tiempo cumplido");
+      }
+      renderTimer();
+    }, 1000);
+    renderTimer();
+  }
+
+  function resetTimer() {
+    if (intervalId) clearInterval(intervalId);
+    running = false;
+    finished = false;
+    remaining = TOTAL_SECONDS;
+    renderTimer();
+  }
+
+  // --- Form ---
+
+  function clearForm() {
+    el.g1.value = "";
+    el.g2.value = "";
+    el.g3.value = "";
+    el.intencion.value = "";
+    el.estado.value = "";
+    el.libre.value = "";
+  }
+
+  function saveEntry() {
+    var g1 = el.g1.value.trim();
+    var intencion = el.intencion.value.trim();
+    var libre = el.libre.value.trim();
+
+    if (!g1 && !intencion && !libre) {
+      showToast("Escribe algo primero 🖊");
+      return;
+    }
+
+    var entry = {
+      id: makeId(),
+      created_at: new Date().toISOString(),
+      gratitud_1: g1 || null,
+      gratitud_2: el.g2.value.trim() || null,
+      gratitud_3: el.g3.value.trim() || null,
+      intencion: intencion || null,
+      estado: el.estado.value.trim() || null,
+      libre: libre || null,
+    };
+
+    var entries = loadEntries();
+    entries.unshift(entry);
+    saveEntries(entries);
+
+    if (historyOpen) renderHistory();
+
+    showToast("Entrada guardada ✓");
+    clearForm();
+  }
+
+  // --- History ---
+
+  function deleteEntry(id) {
+    var entries = loadEntries().filter(function (entry) {
+      return entry.id !== id;
+    });
+    saveEntries(entries);
+    renderHistory();
+  }
+
+  function renderHistory() {
+    var entries = loadEntries();
+    el.historyList.innerHTML = "";
+
+    if (entries.length === 0) {
+      var empty = document.createElement("p");
+      empty.className = "emptyHistory";
+      empty.textContent = "Aún no hay entradas guardadas.";
+      el.historyList.appendChild(empty);
+      return;
+    }
+
+    entries.forEach(function (entry) {
+      var card = document.createElement("div");
+      card.className = "entryCard";
+
+      var date = document.createElement("div");
+      date.className = "entryCardDate";
+      date.textContent = formatDate(new Date(entry.created_at));
+      card.appendChild(date);
+
+      var del = document.createElement("button");
+      del.className = "entryDelete";
+      del.type = "button";
+      del.textContent = "Borrar";
+      del.addEventListener("click", function () {
+        deleteEntry(entry.id);
+      });
+      card.appendChild(del);
+
+      var gratitud = [entry.gratitud_1, entry.gratitud_2, entry.gratitud_3]
+        .filter(Boolean)
+        .join(" · ");
+      if (gratitud) {
+        card.appendChild(makeField("Gratitud", gratitud));
+      }
+      if (entry.intencion) {
+        card.appendChild(makeField("Intención del día", entry.intencion));
+      }
+      if (entry.estado) {
+        card.appendChild(makeField("Estado interno", entry.estado));
+      }
+      if (entry.libre) {
+        card.appendChild(makeField("Espacio libre", entry.libre));
+      }
+
+      el.historyList.appendChild(card);
+    });
+  }
+
+  function makeField(label, value) {
+    var field = document.createElement("div");
+    field.className = "entryField";
+
+    var key = document.createElement("div");
+    key.className = "entryKey";
+    key.textContent = label;
+
+    var val = document.createElement("div");
+    val.className = "entryVal";
+    val.textContent = value;
+
+    field.appendChild(key);
+    field.appendChild(val);
+    return field;
+  }
+
+  function toggleHistory() {
+    historyOpen = !historyOpen;
+    el.historyList.classList.toggle("historyListOpen", historyOpen);
+    el.historyArrow.textContent = historyOpen ? "▾" : "▸";
+    el.historyLabel.textContent = historyOpen
+      ? "Ocultar entradas"
+      : "Ver entradas anteriores";
+    if (historyOpen) renderHistory();
+  }
+
+  // --- Init ---
+
+  function init() {
+    el.todayLabel.textContent = formatDate(new Date());
+    buildDots();
+    renderTimer();
+
+    el.resetBtn.addEventListener("click", resetTimer);
+    el.toggleBtn.addEventListener("click", toggleTimer);
+    el.clearBtn.addEventListener("click", clearForm);
+    el.saveBtn.addEventListener("click", saveEntry);
+    el.historyToggle.addEventListener("click", toggleHistory);
+  }
+
+  document.addEventListener("DOMContentLoaded", init);
+})();
