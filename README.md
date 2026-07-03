@@ -29,4 +29,14 @@ datos. Borrar los datos del sitio en el navegador elimina el historial.
 ## GitHub Pages
 
 Este repositorio se sirve directamente desde la carpeta `/docs` en
-GitHub Pages (Settings → Pages → Branch: `main` / Folder: `/docs`).
+GitHub Pages. Cada push a la rama por defecto republica el sitio
+automáticamente — no hace falta ningún workflow de Actions.
+
+Configuración (una sola vez, en el repo de GitHub):
+Settings → Pages → Build and deployment → Source: `Deploy from a branch`
+→ Branch: la rama por defecto del repo, carpeta `/docs` → Save.
+
+Para que "Iniciar sesión con Google" funcione en la URL pública, la
+URL de Pages (`<usuario>.github.io/<repo>`) debe agregarse en
+Firebase Console → Authentication → Settings → Authorized domains
+del proyecto `journal-2f983`.
