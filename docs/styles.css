@@ -53,6 +53,58 @@ body {
   color: var(--faint);
 }
 
+.authBar {
+  max-width: 640px;
+  margin: -1.5rem auto 2rem;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+.authBtn {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 0.45rem 0.9rem;
+  font-family: "Inter", sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.authBtn:hover {
+  opacity: 0.75;
+}
+.userBox {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.userAvatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+.userName {
+  font-size: 0.75rem;
+  color: var(--faint);
+}
+.authBtnGhost {
+  background: none;
+  border: none;
+  color: var(--faint);
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-family: "Inter", sans-serif;
+  padding: 0;
+}
+.authBtnGhost:hover {
+  color: var(--ink);
+}
+
 .page {
   max-width: 640px;
   margin: 0 auto;
