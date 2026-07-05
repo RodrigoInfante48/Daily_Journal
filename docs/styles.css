@@ -11,6 +11,7 @@ body {
 body {
   background: #f7f4ee;
   font-family: "Inter", sans-serif;
+  overflow-x: hidden;
 }
 
 .journalPage {
@@ -80,6 +81,9 @@ body {
   display: flex;
   align-items: center;
   gap: 0.6rem;
+}
+.userBox[hidden] {
+  display: none;
 }
 .userAvatar {
   width: 24px;
@@ -410,4 +414,80 @@ body {
 }
 .toastShow {
   opacity: 1;
+}
+
+@media (max-width: 640px) {
+  .journalPage {
+    padding: 1.75rem 1rem 3rem;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+    margin-bottom: 2rem;
+  }
+
+  .authBar {
+    margin: -1rem auto 1.5rem;
+  }
+
+  .page {
+    gap: 1.5rem;
+  }
+
+  .timerBar {
+    flex-wrap: wrap;
+    row-gap: 0.6rem;
+    padding: 0.75rem;
+  }
+  .timerDisplay {
+    order: 1;
+  }
+  .progress {
+    order: 2;
+  }
+  .timerBtnReset {
+    order: 3;
+  }
+  .timerBtn:not(.timerBtnReset) {
+    order: 4;
+  }
+  .timerLabel {
+    order: 5;
+    flex: 1 1 100%;
+  }
+
+  .sectionHead {
+    flex-wrap: wrap;
+    row-gap: 0.2rem;
+  }
+  .sectionTitle {
+    font-size: 1.05rem;
+  }
+
+  /* Evita el auto-zoom de iOS Safari al enfocar inputs con font-size < 16px */
+  .lineInput,
+  .areaInput {
+    font-size: 16px;
+  }
+
+  .saveRow {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    justify-content: flex-start;
+  }
+  .btnSave,
+  .btnClear {
+    text-align: center;
+    padding: 0.75rem 1rem;
+  }
+
+  .entryCardDate {
+    padding-right: 4rem;
+  }
+  .entryDelete {
+    top: 1rem;
+    right: 1.2rem;
+  }
 }
