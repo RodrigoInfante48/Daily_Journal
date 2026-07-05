@@ -97,7 +97,7 @@ import {
     if (!currentUser) return loadLocalEntries();
     var snapshot = await getDocs(query(entriesRef(), orderBy("created_at", "desc")));
     return snapshot.docs.map(function (d) {
-      return Object.assign({ id: d.id }, d.data());
+      return Object.assign({}, d.data(), { id: d.id });
     });
   }
 
