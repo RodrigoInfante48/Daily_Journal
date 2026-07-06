@@ -3,8 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mi Diario Personal</title>
-  <meta name="description" content="Journal personal diario — 5 minutos, cada mañana." />
+  <title>Mi Diario Personal — un ritual matutino de 5 minutos</title>
+  <meta
+    name="description"
+    content="Un espacio tranquilo para empezar el día: gratitud, intención, estado interno y un espacio libre. Cinco minutos, cada mañana."
+  />
   <link rel="icon" href="favicon.ico" sizes="any" />
   <link rel="icon" type="image/png" href="favicon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -13,115 +16,60 @@
     href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
     rel="stylesheet"
   />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="landing.css" />
 </head>
 <body>
-  <div class="journalPage">
-    <header class="header">
-      <span class="headerTitle">Journal Matutino</span>
-      <span class="headerDate" id="todayLabel"></span>
-    </header>
+  <div class="landingPage">
+    <main class="landingCard">
+      <img class="landingMark" src="favicon.png" alt="" />
 
-    <div class="authBar">
-      <button class="authBtn" id="loginBtn" type="button">Iniciar sesión con Google</button>
-      <div class="userBox" id="userBox" hidden>
-        <img class="userAvatar" id="userAvatar" alt="" />
-        <span class="userName" id="userName"></span>
-        <button class="authBtnGhost" id="logoutBtn" type="button">Salir</button>
-      </div>
-    </div>
+      <span class="landingEyebrow">Ritual matutino · 5 minutos</span>
+      <h1 class="landingTitle">Un espacio de calma<br />para empezar el día</h1>
+      <p class="landingSubtitle">
+        Antes de que el día te alcance, tómate cinco minutos para ordenar la
+        mente. Sin prisas, sin presión — solo tú, una pregunta a la vez.
+      </p>
 
-    <div class="page">
-      <div class="timerBar">
-        <span class="timerDisplay" id="timerDisplay">5:00</span>
-        <span class="timerLabel">
-          Tienes 5 minutos.
-          <br />
-          Sin prisas, sin presión.
-        </span>
-        <div class="progress" id="progressDots"></div>
-        <button class="timerBtn timerBtnReset" id="resetBtn" type="button">↺</button>
-        <button class="timerBtn" id="toggleBtn" type="button">Iniciar</button>
-      </div>
+      <ol class="landingSteps">
+        <li><span class="landingStepNum">01</span>Gratitud</li>
+        <li><span class="landingStepNum">02</span>Intención</li>
+        <li><span class="landingStepNum">03</span>Estado interno</li>
+        <li><span class="landingStepNum">04</span>Espacio libre</li>
+      </ol>
 
-      <div class="section">
-        <div class="sectionHead">
-          <span class="sectionLabel">01 — Gratitud</span>
-          <span class="sectionHint">~60 seg · anclaje</span>
-        </div>
-        <p class="sectionTitle">¿Qué 3 cosas agradezco hoy?</p>
-        <div class="gratList">
-          <div class="gratRow">
-            <span class="gratNum">1.</span>
-            <input class="lineInput" id="g1" placeholder="algo concreto, no genérico…" />
-          </div>
-          <div class="gratRow">
-            <span class="gratNum">2.</span>
-            <input class="lineInput" id="g2" />
-          </div>
-          <div class="gratRow">
-            <span class="gratNum">3.</span>
-            <input class="lineInput" id="g3" />
-          </div>
-        </div>
-      </div>
+      <button class="googleBtn" id="googleLoginBtn" type="button">
+        <svg class="googleIcon" viewBox="0 0 18 18" aria-hidden="true">
+          <path
+            fill="#4285F4"
+            d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.9c1.7-1.57 2.7-3.88 2.7-6.62z"
+          />
+          <path
+            fill="#34A853"
+            d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.9-2.26c-.8.54-1.83.86-3.06.86-2.35 0-4.34-1.59-5.05-3.72H.98v2.33A9 9 0 0 0 9 18z"
+          />
+          <path
+            fill="#FBBC05"
+            d="M3.95 10.7A5.4 5.4 0 0 1 3.66 9c0-.59.1-1.17.29-1.7V4.97H.98A9 9 0 0 0 0 9c0 1.45.35 2.83.98 4.03l2.97-2.33z"
+          />
+          <path
+            fill="#EA4335"
+            d="M9 3.58c1.32 0 2.51.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 0 0 .98 4.97l2.97 2.33C4.66 5.17 6.65 3.58 9 3.58z"
+          />
+        </svg>
+        Continuar con Google
+      </button>
 
-      <hr class="divider" />
+      <button class="landingGuest" id="guestBtn" type="button">
+        Continuar sin cuenta
+      </button>
 
-      <div class="section">
-        <div class="sectionHead">
-          <span class="sectionLabel">02 — Intención</span>
-          <span class="sectionHint">~60 seg · enfoque</span>
-        </div>
-        <p class="sectionTitle">¿Qué haría que hoy valiera la pena?</p>
-        <input class="lineInput" id="intencion" placeholder="una sola cosa, la más importante…" />
-      </div>
-
-      <hr class="divider" />
-
-      <div class="section">
-        <div class="sectionHead">
-          <span class="sectionLabel">03 — Estado interno</span>
-          <span class="sectionHint">~60 seg · honestidad</span>
-        </div>
-        <p class="sectionTitle">¿Cómo llego a este día?</p>
-        <input class="lineInput" id="estado" placeholder="cuerpo, mente, emociones… lo que sea real…" />
-      </div>
-
-      <hr class="divider" />
-
-      <div class="section">
-        <div class="sectionHead">
-          <span class="sectionLabel">04 — Espacio libre</span>
-          <span class="sectionHint">~2 min · vaciado</span>
-        </div>
-        <p class="sectionTitle">Lo que sea que esté en tu cabeza ahora.</p>
-        <textarea
-          class="areaInput"
-          id="libre"
-          placeholder="sin estructura, sin filtro, sin audiencia — solo tú…"
-        ></textarea>
-      </div>
-
-      <div class="saveRow">
-        <button class="btnClear" id="clearBtn" type="button">Limpiar</button>
-        <button class="btnSave" id="saveBtn" type="button">Guardar entrada</button>
-      </div>
-
-      <hr class="divider" />
-
-      <div class="historySection">
-        <button class="historyToggle" id="historyToggle" type="button">
-          <span id="historyArrow">▸</span>
-          <span id="historyLabel">Ver entradas anteriores</span>
-        </button>
-        <div class="historyList" id="historyList"></div>
-      </div>
-    </div>
-
-    <div class="toast" id="toast"></div>
+      <p class="landingFootnote" id="landingMsg">
+        Con tu cuenta de Google, tus entradas se guardan de forma privada —
+        solo tú puedes verlas, desde cualquier dispositivo.
+      </p>
+    </main>
   </div>
 
-  <script type="module" src="app.js"></script>
+  <script type="module" src="landing.js"></script>
 </body>
 </html>

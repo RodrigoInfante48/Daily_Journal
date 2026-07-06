@@ -1,0 +1,188 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #f7f4ee;
+  font-family: "Inter", sans-serif;
+  overflow-x: hidden;
+}
+
+.landingPage {
+  --ink: #1a1a18;
+  --paper: #f7f4ee;
+  --warm: #e8e2d4;
+  --accent: #5c7a5e;
+  --faint: #b0a898;
+  --rule: #d4cec3;
+
+  background: radial-gradient(ellipse at top, #fbf9f4 0%, var(--paper) 65%);
+  color: var(--ink);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+}
+
+.landingCard {
+  width: 100%;
+  max-width: 460px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.35rem;
+  animation: landingRise 0.9s ease-out both;
+}
+
+@keyframes landingRise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.landingMark {
+  width: 52px;
+  height: 52px;
+  margin-bottom: 1.25rem;
+  border-radius: 12px;
+}
+
+.landingEyebrow {
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.75rem;
+}
+
+.landingTitle {
+  font-family: "Playfair Display", serif;
+  font-weight: 400;
+  font-size: 2.1rem;
+  line-height: 1.28;
+  color: var(--ink);
+  margin: 0 0 1rem;
+}
+
+.landingSubtitle {
+  font-weight: 300;
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: var(--ink);
+  opacity: 0.75;
+  max-width: 38ch;
+  margin: 0 0 2.25rem;
+}
+
+.landingSteps {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem 1.4rem;
+  margin: 0 0 2.5rem;
+  padding: 0;
+}
+.landingSteps li {
+  font-family: "Playfair Display", serif;
+  font-style: italic;
+  font-size: 0.88rem;
+  color: var(--ink);
+  opacity: 0.8;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.landingStepNum {
+  font-family: "Inter", sans-serif;
+  font-style: normal;
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+}
+
+.googleBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  background: #fff;
+  color: var(--ink);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  padding: 0.85rem 1.5rem;
+  font-family: "Inter", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(26, 26, 24, 0.06);
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.googleBtn:hover {
+  box-shadow: 0 4px 14px rgba(26, 26, 24, 0.1);
+  transform: translateY(-1px);
+}
+.googleBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+.googleIcon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.landingGuest {
+  background: none;
+  border: none;
+  color: var(--faint);
+  font-family: "Inter", sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  padding: 1rem 0 0;
+}
+.landingGuest:hover {
+  color: var(--ink);
+}
+
+.landingFootnote {
+  font-size: 0.72rem;
+  line-height: 1.6;
+  color: var(--faint);
+  max-width: 34ch;
+  margin: 1.75rem 0 0;
+}
+.landingFootnote.landingError {
+  color: #a24a3f;
+}
+
+@media (max-width: 480px) {
+  .landingTitle {
+    font-size: 1.7rem;
+  }
+  .landingSubtitle {
+    font-size: 0.88rem;
+  }
+  .landingSteps {
+    gap: 0.5rem 1rem;
+  }
+}

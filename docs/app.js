@@ -349,6 +349,7 @@ import {
   async function logout() {
     try {
       await signOut(auth);
+      window.location.href = "index.html";
     } catch (e) {
       showToast("No se pudo cerrar sesión");
     }
