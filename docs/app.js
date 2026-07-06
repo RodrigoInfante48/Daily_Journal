@@ -225,6 +225,7 @@ import {
     try {
       await addEntry(entry);
     } catch (e) {
+      console.error("saveEntry failed:", e);
       showToast("No se pudo guardar la entrada");
       return;
     }
