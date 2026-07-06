@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mi Diario Personal</title>
+  <meta name="description" content="Journal personal diario — 5 minutos, cada mañana." />
+  <link rel="icon" href="favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="journalPage">
+    <header class="header">
+      <a class="headerTitle" href="index.html">Journal Matutino</a>
+      <span class="headerDate" id="todayLabel"></span>
+    </header>
+
+    <div class="authBar">
+      <button class="authBtn" id="loginBtn" type="button">Iniciar sesión con Google</button>
+      <div class="userBox" id="userBox" hidden>
+        <img class="userAvatar" id="userAvatar" alt="" />
+        <span class="userName" id="userName"></span>
+        <button class="authBtnGhost" id="logoutBtn" type="button">Salir</button>
+      </div>
+    </div>
+
+    <div class="page">
+      <div class="timerBar">
+        <span class="timerDisplay" id="timerDisplay">5:00</span>
+        <span class="timerLabel">
+          Tienes 5 minutos.
+          <br />
+          Sin prisas, sin presión.
+        </span>
+        <div class="progress" id="progressDots"></div>
+        <button class="timerBtn timerBtnReset" id="resetBtn" type="button">↺</button>
+        <button class="timerBtn" id="toggleBtn" type="button">Iniciar</button>
+      </div>
+
+      <div class="section">
+        <div class="sectionHead">
+          <span class="sectionLabel">01 — Gratitud</span>
+          <span class="sectionHint">~60 seg · anclaje</span>
+        </div>
+        <p class="sectionTitle">¿Qué 3 cosas agradezco hoy?</p>
+        <div class="gratList">
+          <div class="gratRow">
+            <span class="gratNum">1.</span>
+            <input class="lineInput" id="g1" placeholder="algo concreto, no genérico…" />
+          </div>
+          <div class="gratRow">
+            <span class="gratNum">2.</span>
+            <input class="lineInput" id="g2" />
+          </div>
+          <div class="gratRow">
+            <span class="gratNum">3.</span>
+            <input class="lineInput" id="g3" />
+          </div>
+        </div>
+      </div>
+
+      <hr class="divider" />
+
+      <div class="section">
+        <div class="sectionHead">
+          <span class="sectionLabel">02 — Intención</span>
+          <span class="sectionHint">~60 seg · enfoque</span>
+        </div>
+        <p class="sectionTitle">¿Qué haría que hoy valiera la pena?</p>
+        <input class="lineInput" id="intencion" placeholder="una sola cosa, la más importante…" />
+      </div>
+
+      <hr class="divider" />
+
+      <div class="section">
+        <div class="sectionHead">
+          <span class="sectionLabel">03 — Estado interno</span>
+          <span class="sectionHint">~60 seg · honestidad</span>
+        </div>
+        <p class="sectionTitle">¿Cómo llego a este día?</p>
+        <input class="lineInput" id="estado" placeholder="cuerpo, mente, emociones… lo que sea real…" />
+      </div>
+
+      <hr class="divider" />
+
+      <div class="section">
+        <div class="sectionHead">
+          <span class="sectionLabel">04 — Espacio libre</span>
+          <span class="sectionHint">~2 min · vaciado</span>
+        </div>
+        <p class="sectionTitle">Lo que sea que esté en tu cabeza ahora.</p>
+        <textarea
+          class="areaInput"
+          id="libre"
+          placeholder="sin estructura, sin filtro, sin audiencia — solo tú…"
+        ></textarea>
+      </div>
+
+      <div class="saveRow">
+        <button class="btnClear" id="clearBtn" type="button">Limpiar</button>
+        <button class="btnSave" id="saveBtn" type="button">Guardar entrada</button>
+      </div>
+
+      <hr class="divider" />
+
+      <div class="historySection">
+        <button class="historyToggle" id="historyToggle" type="button">
+          <span id="historyArrow">▸</span>
+          <span id="historyLabel">Ver entradas anteriores</span>
+        </button>
+        <div class="historyList" id="historyList"></div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
